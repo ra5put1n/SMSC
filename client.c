@@ -78,7 +78,7 @@ int main()
 	// getting pid of client process and storing it into queue
 	// server will use this key for kill(pid,SIGUSR1);
 	q->queue[0].client_id = getpid();
-	printf("Line 46 of client program\n");
+	//printf("Line 46 of client program\n");
 	int num = q->num;
 	printf("q->num updated by the server : %d\n",q->num);
 	int c;
@@ -115,7 +115,7 @@ int main()
 	{
 		q->queue[num].service=1;
 		printf("Enter string: ");
-		gets(q->queue[num].string);
+		scanf("%s",q->queue[num].string);
 	}
 	else if(c ==2)
 	{
