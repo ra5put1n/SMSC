@@ -1,3 +1,4 @@
+//client
 #include<stdio.h>
 #include<unistd.h>
 #include<stdlib.h>
@@ -12,8 +13,8 @@
 
  struct data{
 	int service;
-	char string[20];  //service 1
-	int matrix[3][3];  //service 2
+	char string[100];  //service 1
+	double matrix[3][3];  //service 2
 	int factorial;  //service 3
 	int shared_mem_id;
 	int client_id;
@@ -116,11 +117,9 @@ int main()
 	{
 		q->queue[num].service=2;
 		printf("Enter matrix elements: ");
-		for(int i=0;i<3;i++)
-		{
-			for(int j=1;j<3;j++)
-			{
-				scanf("%d",&q->queue[num].matrix[i][j]);
+		for(int i=0;i<3;i++){
+			for(int j=0;j<3;j++){
+				scanf("%lf",&q->queue[num].matrix[i][j]);
 			}
 		}
 	}
@@ -132,6 +131,10 @@ int main()
 	}
 	else
 	{
+			if(semop(id, &v, 1) < 0)
+  		{
+    			perror("semop p"); exit(14);
+  		}
 			printf("Wrong choice..\n");
 			goto choice;
 	}
