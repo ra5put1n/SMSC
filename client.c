@@ -75,12 +75,6 @@ int main()
     }
 	// shared memory created for queue
 
-	// getting pid of client process and storing it into queue
-	// server will use this key for kill(pid,SIGUSR1);
-	q->queue[0].client_id = getpid();
-	//printf("Line 46 of client program\n");
-	int num = q->num;
-	printf("q->num updated by the server : %d\n",q->num);
 	int c;
 	
   choice: printf("Enter 1 to check whether a string is palindrome or not?\n" );
@@ -95,15 +89,16 @@ int main()
   }
 	//cs
 	q->num++;
+	int num = q->num;
 	//cs end
   if(semop(id, &v, 1) < 0)
   {
     perror("semop p"); exit(14);
   }
-	num = q->num;
-  printf("%d",c);
-	printf("q->num incremented : %d",num);
-	printf("\nChoice: %d",c);
+
+  //printf("%d",c);
+	//printf("q->num incremented : %d",num);
+	//printf("\nChoice: %d",c);
 	puts("");
 
   if(semop(id, &p, 1) < 0)

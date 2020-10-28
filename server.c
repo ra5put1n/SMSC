@@ -74,43 +74,39 @@ int main()
 
 while(1)
 	{
-      if(semop(id, &p, 1) < 0)
-      {
+      if(semop(id, &p, 1) < 0){
         perror("semop p"); exit(13);
       }
 			//cs
 			front = q->num;
 			//cs end
-      if(semop(id, &v, 1) < 0)
-      {
+      if(semop(id, &v, 1) < 0){
         perror("semop p"); exit(14);
       }
 
-      printf("front : %d,  back : %d ",front,back);
-			if(front == -1)
-			{
+      //printf("front : %d,  back : %d ",front,back);
+			if(front == -1){
 				puts("Waiting for clients..");
 			}
 			else if(front >= back)
 			{
-        if(semop(id, &p, 1) < 0)
-        {
+        if(semop(id, &p, 1) < 0){
           perror("semop p"); exit(13);
         }
 				//cs
 				input_data = q->queue[back];
 				//cs end
-        if(semop(id, &v, 1) < 0)
-        {
+        if(semop(id, &v, 1) < 0){
           perror("semop p"); exit(14);
         }
 
 				int pid,ch;
 				ch = input_data.service;
-				printf("Choice of service is: %d",ch);
+				
 				pid = fork();
 				if(pid == 0)
 				{
+					printf("Choice of service is: %d",ch);
 					//printf("\npid : %d",pid);
 					if(ch == 1)
 					{
@@ -141,7 +137,7 @@ while(1)
 			}
 			else 
 			{
-				puts("\nresetting front and back");
+				//puts("\nresetting front and back");
 			  back= 0;
         if(semop(id, &p, 1) < 0)
         {
