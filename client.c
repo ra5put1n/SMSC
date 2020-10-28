@@ -5,12 +5,16 @@
 #include<sys/shm.h>
 #include<sys/ipc.h>
 #include<sys/msg.h>
+#include<sys/sem.h>
 #include<string.h>
+
+#define KEY 0x1111
+
  struct data{
 	int service;
 	char string[20];  //service 1
-	char * matrix[3][3];  //service 2
-	char * factorial;  //service 3
+	int matrix[3][3];  //service 2
+	int factorial;  //service 3
 	int shared_mem_id;
 	int client_id;
 }; 	
@@ -26,6 +30,15 @@ struct ANS{
 
 
 void my_handler(){}
+
+union semun {
+    int val;
+    struct semid_ds *buf;
+    unsigned short  *array;
+};
+
+struct sembuf p = { 0, -1, SEM_UNDO};
+struct sembuf v = { 0, +1, SEM_UNDO};
 
 int main()
 {
@@ -48,6 +61,18 @@ int main()
 			perror("errorQueueClient: ");
 			exit(0);
 		}
+
+    int id = semget(KEY, 1, 0666 | IPC_CREAT);
+    if(id < 0)
+    {
+        perror("semget"); exit(11);
+    }
+    union semun u;
+    u.val = 1;
+    if(semctl(id, 0, SETVAL, u) < 0)
+    {
+        perror("semctl"); exit(12);
+    }
 	// shared memory created for queue
 
 	// getting pid of client process and storing it into queue
@@ -64,14 +89,28 @@ int main()
   printf("Choose the service you want to avail (1/2/3) or -1 to exit: ");
 	scanf("%d",&c);
 
+  if(semop(id, &p, 1) < 0)
+  {
+     perror("semop p"); exit(13);
+  }
 	//cs
 	q->num++;
+	//cs end
+  if(semop(id, &v, 1) < 0)
+  {
+    perror("semop p"); exit(14);
+  }
 	num = q->num;
   printf("%d",c);
 	printf("q->num incremented : %d",num);
 	printf("\nChoice: %d",c);
 	puts("");
 
+  if(semop(id, &p, 1) < 0)
+  {
+     perror("semop p"); exit(13);
+  }
+	//cs
   if(c==1)
 	{
 		q->queue[num].service=1;
@@ -86,7 +125,7 @@ int main()
 		{
 			for(int j=1;j<3;j++)
 			{
-				scanf("%s",q->queue[num].matrix[i][j]);
+				scanf("%d",&q->queue[num].matrix[i][j]);
 			}
 		}
 	}
@@ -94,13 +133,18 @@ int main()
 	{
 		q->queue[num].service=3;
 		printf("Enter number to find factorial: ");
-		scanf("%s",q->queue[num].factorial);
+		scanf("%d",&q->queue[num].factorial);
 	}
 	else
 	{
 			printf("Wrong choice..\n");
 			goto choice;
 	}
+	//cs
+  if(semop(id, &v, 1) < 0)
+  {
+    perror("semop p"); exit(14);
+  }
 
   puts("");
 	key_t key1 = ftok("answer.txt", pid);

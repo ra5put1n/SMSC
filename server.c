@@ -6,11 +6,15 @@
 #include<sys/ipc.h>
 #include<sys/msg.h>
 #include<string.h>
+#include<sys/sem.h>
+
+#define KEY 0x1111
+
  struct data{
 	int service;
 	char string[20];  //service 1
-	char * matrix[3][3];  //service 2
-	char * factorial;  //service 3
+	int matrix[3][3];  //service 2
+	int factorial;  //service 3
 	int shared_mem_id;
 	int client_id;
 }input_data; 	
@@ -21,6 +25,15 @@ struct data_queue {
 };
 
 void my_handler(){}
+
+union semun {
+    int val;
+    struct semid_ds *buf;
+    unsigned short  *array;
+};
+
+struct sembuf p = { 0, -1, SEM_UNDO};
+struct sembuf v = { 0, +1, SEM_UNDO};
 
 int main()
 {
@@ -42,6 +55,18 @@ int main()
 			perror("errorQueueServer: ");
 			exit(0);
 		}
+
+    int id = semget(KEY, 1, 0666 | IPC_CREAT);
+    if(id < 0)
+    {
+        perror("semget"); exit(11);
+    }
+    union semun u;
+    u.val = 1;
+    if(semctl(id, 0, SETVAL, u) < 0)
+    {
+        perror("semctl"); exit(12);
+    }
 	// shared memory created for queue
 	q->num = -1;
 	int front,back=0;
@@ -49,11 +74,18 @@ int main()
 
 while(1)
 	{
-      //Block(input_data.empty);
+      if(semop(id, &p, 1) < 0)
+      {
+        perror("semop p"); exit(13);
+      }
 			//cs
 			front = q->num;
 			//cs end
-      //UnBlock(input_data.full,input_data);
+      if(semop(id, &v, 1) < 0)
+      {
+        perror("semop p"); exit(14);
+      }
+
       printf("front : %d,  back : %d ",front,back);
 			if(front == -1)
 			{
@@ -61,18 +93,29 @@ while(1)
 			}
 			else if(front >= back)
 			{
+        if(semop(id, &p, 1) < 0)
+        {
+          perror("semop p"); exit(13);
+        }
+				//cs
 				input_data = q->queue[back];
-        
+				//cs end
+        if(semop(id, &v, 1) < 0)
+        {
+          perror("semop p"); exit(14);
+        }
+
 				int pid,ch;
 				ch = input_data.service;
 				printf("Choice of service is: %d",ch);
 				pid = fork();
 				if(pid == 0)
 				{
-					printf("\npid : %d",pid);
+					//printf("\npid : %d",pid);
 					if(ch == 1)
 					{
-						printf("\nstrings\n");
+						printf("\nstrings :\n");
+						puts(input_data.string);
 						//execl("./service1", "./service1", input_data.string,input_data.shared_mem_id,input_data.client_id, NULL);
 						exit(0);
 					}
@@ -84,7 +127,7 @@ while(1)
 					}
 					else if(ch == 3)
 					{
-						printf("factorial:%s", input_data.factorial);
+						printf("factorial:%d", input_data.factorial);
 						//execl("./service3", "./service3", input_data.factorial,input_data.shared_mem_id,input_data.client_id, NULL);
 						exit(0);
 					}
@@ -100,11 +143,17 @@ while(1)
 			{
 				puts("\nresetting front and back");
 			  back= 0;
-        //Block(input_data.empty);
+        if(semop(id, &p, 1) < 0)
+        {
+          perror("semop p"); exit(13);
+        }
 				//cs
 				q->num = -1;
 				//cs end
-        //UnBlock(input_data.full,input_data);
+        if(semop(id, &v, 1) < 0)
+        {
+          perror("semop p"); exit(14);
+        }
 			}
 			sleep(1);
   }	
