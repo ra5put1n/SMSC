@@ -8,7 +8,7 @@
 #include<string.h>
  struct data{
 	int service;
-	char * string[20];  //service 1
+	char string[20];  //service 1
 	char * matrix[3][3];  //service 2
 	char * factorial;  //service 3
 	int shared_mem_id;

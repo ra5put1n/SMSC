@@ -8,7 +8,7 @@
 #include<string.h>
  struct data{
 	int service;
-	char * string[20];  //service 1
+	char string[20];  //service 1
 	char * matrix[3][3];  //service 2
 	char * factorial;  //service 3
 	int shared_mem_id;
@@ -57,7 +57,8 @@ int main()
 	int num = q->num;
 	printf("q->num updated by the server : %d\n",q->num);
 	int c;
-  printf("Enter 1 to check whether a string is palindrome or not?\n" );
+	
+  choice: printf("Enter 1 to check whether a string is palindrome or not?\n" );
   printf("Enter 2 to find determinant of a 3x3 matrix.\n" );
   printf("Enter 3 to find factorial of an integer?\n" );
   printf("Choose the service you want to avail (1/2/3) or -1 to exit: ");
@@ -65,9 +66,43 @@ int main()
 
 	//cs
 	q->num++;
-	printf("q->num incremented : %d\n",q->num);
-	//cd end
+	num = q->num;
+  printf("%d",c);
+	printf("q->num incremented : %d",num);
+	printf("\nChoice: %d",c);
+	puts("");
 
+  if(c==1)
+	{
+		q->queue[num].service=1;
+		printf("Enter string: ");
+		gets(q->queue[num].string);
+	}
+	else if(c ==2)
+	{
+		q->queue[num].service=2;
+		printf("Enter matrix elements: ");
+		for(int i=0;i<3;i++)
+		{
+			for(int j=1;j<3;j++)
+			{
+				scanf("%s",q->queue[num].matrix[i][j]);
+			}
+		}
+	}
+  else if(c == 3)
+	{
+		q->queue[num].service=3;
+		printf("Enter number to find factorial: ");
+		scanf("%s",q->queue[num].factorial);
+	}
+	else
+	{
+			printf("Wrong choice..\n");
+			goto choice;
+	}
+
+  puts("");
 	key_t key1 = ftok("answer.txt", pid);
   if(key1==-1){
     perror("error0:");
