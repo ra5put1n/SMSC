@@ -29,21 +29,20 @@ int isPalindrome(char str[]) {
 } 
    
 int main(int argc, char * argv[]){
-  printf("Hello, I am Service1 prog.   My PID is %d\n", getpid());
+  //printf("Hello, I am Service1 prog.   My PID is %d\n", getpid());
   signal(SIGUSR1,my_handler);
   int answer;
   int shared_address = atoi(argv[argc-2]);
   int client_id = atoi(argv[argc-1]);
-  printf("\n client id : %d",client_id);
-   printf("\n shmid : %d",shared_address);
+  //printf("\n client id : %d",client_id);
+  //printf("\n shmid : %d",shared_address);
   struct ANS *myans = (struct ANS *)shmat(shared_address, NULL, 0);
   answer= isPalindrome(argv[1]);
   //cs
   myans->answer = answer;
-  printf("ans : %d",myans->answer);
   //cs end
   kill(client_id,SIGUSR1);
   
-  printf("Service1 is exiting...\n");
+  //printf("Service1 is exiting...\n");
   return 0;
 }

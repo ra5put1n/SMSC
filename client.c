@@ -44,8 +44,9 @@ struct sembuf v = { 0, +1, SEM_UNDO};
 int main()
 {
 	int pid = getpid();
+
 	signal(SIGUSR1,my_handler);
-	printf(" Client program has started \n");
+	printf(" Client program has started with PID: %d\n",pid);
 	// Creatring Shared Memory for queue
 		key_t keyForQueue = ftok("buffer.txt",10);
 		if(keyForQueue<0){
@@ -62,6 +63,23 @@ int main()
 			perror("errorQueueClient: ");
 			exit(0);
 		}
+
+			key_t key1 = ftok("answer.txt", pid);
+  if(key1==-1){
+    perror("error0:");
+    exit(1);
+  }
+  int shmid = shmget(key1, sizeof(struct ANS), IPC_CREAT | 0666);
+  if(shmid<0){
+    perror("error1:");
+    exit(1);
+  }
+  struct ANS *myans=(struct ANS *)shmat(shmid,NULL,0);
+  if(myans == (void *) -1){
+    perror("error2:");
+    exit(1);
+  }
+	
 
     int id = semget(KEY, 1, 0666 | IPC_CREAT);
     if(id < 0)
@@ -83,24 +101,6 @@ int main()
   printf("Enter 3 to find factorial of an integer?\n" );
   printf("Choose the service you want to avail (1/2/3) or -1 to exit: ");
 	scanf("%d",&c);
-
-  // if(semop(id, &p, 1) < 0)
-  // {
-  //    perror("semop p"); exit(13);
-  // }
-	// //cs
-
-	// //cs end
-  // if(semop(id, &v, 1) < 0)
-  // {
-  //   perror("semop p"); exit(14);
-  // }
-
-  //printf("%d",c);
-	//printf("q->num incremented : %d",num);
-	//printf("\nChoice: %d",c);
- 
-
 	puts("");
 
 	int temp_fac;
@@ -144,7 +144,7 @@ int main()
 
 	q->num++;
 	int num = q->num;
-	q->queue[num].shared_mem_id=shmForQueue;
+	q->queue[num].shared_mem_id=shmid;
   q->queue[num].client_id=pid;
 
 	if(c == 1)
@@ -172,34 +172,21 @@ int main()
   }
 
   puts("");
-	key_t key1 = ftok("answer.txt", pid);
-  if(key1==-1){
-    perror("error0:");
-    exit(1);
-  }
-  int shmid = shmget(key1, sizeof(struct ANS), IPC_CREAT | 0666);
-  if(shmid<0){
-    perror("error1:");
-    exit(1);
-  }
-  struct ANS *myans=(struct ANS *)shmat(shmid,NULL,0);
-  if(myans == (void *) -1){
-    perror("error2:");
-    exit(1);
-  }
 
-  printf("\nshmid : %d",q->queue[num].shared_mem_id);
-  printf("\nclient id : %d",q->queue[num].client_id);
+
+  //printf("\nshmid : %d",q->queue[num].shared_mem_id);
+  //printf("\nclient id : %d",q->queue[num].client_id);
 	pause();
+	//printf("myans->answer: %d",myans->answer);
 	//cs
 	int final_ans = myans->answer;
 	//cs
-  printf("\n%d",final_ans);
+  //printf("\nfinal ans : %d",final_ans);
 	
   if(c==1)
   {
     if(final_ans == 0)
-      printf("\nNOT palindrome");
+      printf("\nNOT a palindrome");
     else
       printf("\nPalindrome");
   }

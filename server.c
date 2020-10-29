@@ -129,7 +129,7 @@ while(1)
         //printf("pid : %d",pid);
 				if(pid == 0)
 				{
-					printf("\nChoice of service is: %d",ch);
+					//printf("\nChoice of service is: %d",ch);
 					//printf("\npid of child: %d",getpid());
           snprintf(shared_id,100,"%d",input_data.shared_mem_id);
           snprintf(clint_id,100,"%d",input_data.client_id);
@@ -137,19 +137,19 @@ while(1)
           // puts(clint_id);
 					if(ch == 1)
 					{
-						printf("\nstrings :\n");
-						puts(input_data.string);
+						//printf("\nstrings :\n");
+						//puts(input_data.string);
 						execl("./service1", "./service1", input_data.string,shared_id,clint_id, NULL);
 						exit(0);
 					}
 					else if(ch == 2)
 					{
-						printf("\nMatrix stuff\n");
+						//printf("\nMatrix stuff\n");
             for(int i=0;i<3;i++){
               for(int j=0;j<3;j++){
                 //printf("\n%lf",input_data.matrix[i][j]);
                 snprintf(mat[i][j],100,"%lf",input_data.matrix[i][j]);
-                puts(mat[i][j]);
+                //puts(mat[i][j]);
               }
             }
 						execl("./service2", "./service2", mat[0][0],mat[0][1],mat[0][2],mat[1][0],mat[1][1],mat[1][2],mat[2][0],mat[2][1],mat[2][2],shared_id,clint_id, NULL);
@@ -157,19 +157,19 @@ while(1)
 					}
 					else if(ch == 3)
 					{
-						puts("\nIn factorial");
-						printf("\nfactorial:%d", input_data.factorial);
+						//puts("\nIn factorial");
+						//printf("\nfactorial:%d", input_data.factorial);
             snprintf(fact,100,"%d",input_data.factorial);
             //tostring(fact, input_data.factorial);
-            puts(fact);
+            //puts(fact);
 						execl("./service3", "./service3",fact,shared_id,clint_id, NULL);
 						exit(0);
 					}
-					else
-					{
-						puts("\nNo choice but to die");
-						exit(0);
-					}
+					// else
+					// {
+					// 	puts("\nNo choice but to die");
+					// 	exit(0);
+					// }
       	}
 				back++;
 			}

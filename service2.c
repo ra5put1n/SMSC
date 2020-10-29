@@ -24,7 +24,7 @@ double determinant(double arr[3][3]){
 
 int main(int argc, char * argv[]){
   double arr[3][3],answer;
-  printf("Hello, I am Service2 : Matrix Determinant program. My PID is %d\n", getpid());
+  //printf("Hello, I am Service2 : Matrix Determinant program. My PID is %d\n", getpid());
   signal(SIGUSR1,my_handler);
   if(argc-3!=9){
     printf("Invalid Inputs..!!");
@@ -44,6 +44,6 @@ int main(int argc, char * argv[]){
     myans->answer = answer;
     kill(client_id,SIGUSR1);
   }
-  printf("Service2 is exiting...\n");
+  //printf("Service2 is exiting...\n");
   return 0;
 }
