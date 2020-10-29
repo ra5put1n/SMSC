@@ -165,11 +165,10 @@ int main()
     perror("semop p"); exit(14);
   }
 	//cs end
-
   puts("");
 
 	pause();
-	int final_ans = myans->answer;
+	double final_ans = myans->answer;
   if(c==1)
   {
     if(final_ans == 0)
@@ -178,7 +177,7 @@ int main()
       printf("Palindrome\n");
   }
   else
-    printf("Answer is: %d\n",final_ans);
+    printf("Answer is: %.2lf\n",final_ans);
       
   exit(0);
 

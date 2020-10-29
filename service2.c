@@ -31,11 +31,12 @@ int main(int argc, char * argv[]){
     exit(0);
   }
   else{
-    for(int i=1;i<argc-2;i++)
-      for(int j=0;j<3;j++)
-        for(int k=j;k<3;k++)
-          arr[j][k] = atoi(argv[i]);
-
+    int i=1;
+    for(int j=0;j<3;j++)
+      for(int k=0;k<3;k++){
+        arr[j][k] = atoi(argv[i]);
+        i++;
+      }
     int shared_address = atoi(argv[argc-2]);
     int client_id = atoi(argv[argc-1]);
 
