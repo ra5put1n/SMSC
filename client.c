@@ -27,7 +27,7 @@ struct data_queue {
 
 struct ANS{
   int answer;
-}*myans;
+};
 
 
 void my_handler(){}
@@ -100,6 +100,9 @@ int main()
   //printf("%d",c);
 	//printf("q->num incremented : %d",num);
 	//printf("\nChoice: %d",c);
+  q->queue[num].shared_mem_id=shmForQueue;
+  q->queue[num].client_id=pid;
+
 	puts("");
 
   if(semop(id, &p, 1) < 0)
@@ -155,16 +158,19 @@ int main()
     perror("error1:");
     exit(1);
   }
-  myans=(struct ANS *)shmat(shmid,NULL,0);
+  struct ANS *myans=(struct ANS *)shmat(shmid,NULL,0);
   if(myans == (void *) -1){
     perror("error2:");
     exit(1);
   }
 
+  printf("\nshmid : %d",q->queue[num].shared_mem_id);
+  printf("\nclient id : %d",q->queue[num].client_id);
 	pause();
 	//cs
 	int final_ans = myans->answer;
 	//cs
+  printf("\n%d",final_ans);
 	
   if(c==1)
   {

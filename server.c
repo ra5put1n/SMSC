@@ -57,9 +57,11 @@ int main()
 {
   char mat[3][3][100];
   char fact[100];
+  char shared_id[100];
+  char clint_id[100];
 	signal(SIGUSR1,my_handler);
 	printf(" Server program has started \n");
-	// Creatring Shared Memory for queue
+	// Creating Shared Memory for queue
 		key_t key = ftok("buffer.txt",10);
 		if(key<0){
 			perror("errorKeyQueueServer: ");
@@ -128,12 +130,16 @@ while(1)
 				if(pid == 0)
 				{
 					printf("\nChoice of service is: %d",ch);
-					printf("\npid of child: %d",getpid());
+					//printf("\npid of child: %d",getpid());
+          snprintf(shared_id,100,"%d",input_data.shared_mem_id);
+          snprintf(clint_id,100,"%d",input_data.client_id);
+          // puts(shared_id);
+          // puts(clint_id);
 					if(ch == 1)
 					{
 						printf("\nstrings :\n");
 						puts(input_data.string);
-						//execl("./service1", "./service1", input_data.string,input_data.shared_mem_id,input_data.client_id, NULL);
+						execl("./service1", "./service1", input_data.string,shared_id,clint_id, NULL);
 						exit(0);
 					}
 					else if(ch == 2)
@@ -146,7 +152,7 @@ while(1)
                 puts(mat[i][j]);
               }
             }
-						//execl("./service2", "./service2", input_data.matrix[0][0],input_data.matrix[0][1],input_data.matrix[0][2],input_data.matrix[1][0],input_data.matrix[1][1],input_data.matrix[1][2],input_data.matrix[2][0],input_data.matrix[2][1],input_data.matrix[2][2],input_data.shared_mem_id,input_data.client_id, NULL);
+						execl("./service2", "./service2", mat[0][0],mat[0][1],mat[0][2],mat[1][0],mat[1][1],mat[1][2],mat[2][0],mat[2][1],mat[2][2],shared_id,clint_id, NULL);
 						exit(0);
 					}
 					else if(ch == 3)
@@ -156,7 +162,7 @@ while(1)
             snprintf(fact,100,"%d",input_data.factorial);
             //tostring(fact, input_data.factorial);
             puts(fact);
-						//execl("./service3", "./service3", input_data.factorial,input_data.shared_mem_id,input_data.client_id, NULL);
+						execl("./service3", "./service3",fact,shared_id,clint_id, NULL);
 						exit(0);
 					}
 					else
