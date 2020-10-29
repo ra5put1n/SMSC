@@ -40,7 +40,7 @@ void handle_sigint()
 { 
   char * command = "ipcrm -a";
 	system(command);
-  printf("\nRequest Queue is cleared."); 
+  printf("\nRequest Queue is cleared.\n"); 
   exit(0);
 } 
 
@@ -104,7 +104,7 @@ while(1)
 			//cs end
 
 			if(front == -1){
-				puts("Waiting for clients..");
+				puts("Now Serving Clients..");
 			}
 			else if(front >= back)
 			{

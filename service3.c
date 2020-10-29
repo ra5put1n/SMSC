@@ -12,6 +12,7 @@ void my_handler(){}
 
 struct ANS{
   int answer;
+  int err;
 };
 
 
@@ -24,32 +25,25 @@ unsigned long long int factorial(unsigned long long int n)
 }
 
 int main(int argc, char * argv[]){
+	int err;
   signal(SIGUSR1,my_handler);
-  //printf("Hello, I am Service3 prog. My PID is %d\n", getpid());
   int num;
   unsigned long long int answer;
+
+  int shared_address = atoi(argv[argc-2]);
+  int client_id = atoi(argv[argc-1]);
+  struct ANS *myans = (struct ANS *)shmat(shared_address, NULL, 0);
   num = atoi(argv[1]);
   
-  if(num<0){
-    //printf("\nInvalid Input..!! Enter number >= 0. ");
-    answer=0;
-  }
+  if(num<0)
+    err=1;
   else
-		//printf("\nNumber to find factorial of: %d",num);
-    answer =factorial(num);
-		//printf("\nAnswer is: %d",answer);
-    int shared_address = atoi(argv[argc-2]);
-    int client_id = atoi(argv[argc-1]);
-		//printf("\nShared memory id: %d, client id: %d",shared_address,client_id);
-
-    struct ANS *myans = (struct ANS *)shmat(shared_address, NULL, 0);
+	{	
+		err=0;
+		answer =factorial(num);
     myans->answer = answer;
-		//detach
-    //shmdt(myans);
-		//printf("%d",myans->answer);
-    kill(client_id,SIGUSR1);
-
-
-  //printf("\nService3 is exiting...\n");
+	}
+	myans->err=err;
+  kill(client_id,SIGUSR1);
   return 0;
 }

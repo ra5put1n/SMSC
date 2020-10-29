@@ -27,6 +27,7 @@ struct data_queue {
 
 struct ANS{
   int answer;
+	int err;
 };
 
 void my_handler(){}
@@ -169,16 +170,23 @@ int main()
 
 	pause();
 	double final_ans = myans->answer;
-  if(c==1)
-  {
-    if(final_ans == 0)
-      printf("NOT a palindrome\n");
-    else
-      printf("Palindrome\n");
-  }
-  else
-    printf("Answer is: %.2lf\n",final_ans);
-      
+	int err = myans->err;
+	if(err)
+	{
+		printf("Error in inputs.\n");
+	}
+	else
+	{
+			if(c==1)
+  		{
+				if(final_ans == 0)
+					printf("NOT a palindrome\n");
+				else
+					printf("Palindrome\n");
+			}
+			else
+				printf("Answer is: %.2lf\n",final_ans);
+	} 
   exit(0);
 
 }

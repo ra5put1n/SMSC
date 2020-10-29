@@ -7,16 +7,21 @@
 #include<sys/ipc.h>
 #include<sys/shm.h>
 #include<signal.h>
+#include<ctype.h>
 
 void my_handler(){}
 
 struct ANS{
   int answer;
+	int err;
 };
 
 //palindrome
-int isPalindrome(char str[]) { 
-  int l = 0, h = strlen(str) - 1;  
+int isPalindrome(char string[]) { 
+  int l = 0, h = strlen(string) - 1;  
+  char str[100];
+  for(int i=0;i<=h;i++)
+    str[i]=tolower(string[i]);
   while (h > l) { 
     if (str[l] != str[h]) 
       return 0;
@@ -29,20 +34,14 @@ int isPalindrome(char str[]) {
 } 
    
 int main(int argc, char * argv[]){
-  //printf("Hello, I am Service1 prog.   My PID is %d\n", getpid());
   signal(SIGUSR1,my_handler);
   int answer;
   int shared_address = atoi(argv[argc-2]);
   int client_id = atoi(argv[argc-1]);
-  //printf("\n client id : %d",client_id);
-  //printf("\n shmid : %d",shared_address);
   struct ANS *myans = (struct ANS *)shmat(shared_address, NULL, 0);
   answer= isPalindrome(argv[1]);
-  //cs
+	myans->err = 0;
   myans->answer = answer;
-  //cs end
   kill(client_id,SIGUSR1);
-  
-  //printf("Service1 is exiting...\n");
   return 0;
 }

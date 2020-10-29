@@ -12,6 +12,7 @@ void my_handler(){}
 
 struct ANS{
   int answer;
+	int err;
 };
 
 //matrix
@@ -24,27 +25,25 @@ double determinant(double arr[3][3]){
 
 int main(int argc, char * argv[]){
   double arr[3][3],answer;
-  //printf("Hello, I am Service2 : Matrix Determinant program. My PID is %d\n", getpid());
+	int err;
+	int shared_address = atoi(argv[argc-2]);
+  int client_id = atoi(argv[argc-1]);
+  struct ANS *myans = (struct ANS *)shmat(shared_address, NULL, 0);
   signal(SIGUSR1,my_handler);
-  if(argc-3!=9){
-    printf("Invalid Inputs..!!");
-    exit(0);
-  }
-  else{
+  
+		err=0;
     int i=1;
     for(int j=0;j<3;j++)
-      for(int k=0;k<3;k++){
+		{
+      for(int k=0;k<3;k++)
+			{
         arr[j][k] = atoi(argv[i]);
         i++;
-      }
-    int shared_address = atoi(argv[argc-2]);
-    int client_id = atoi(argv[argc-1]);
-
-    struct ANS *myans = (struct ANS *)shmat(shared_address, NULL, 0);
-    answer=determinant(arr);
-    myans->answer = answer;
-    kill(client_id,SIGUSR1);
-  }
-  //printf("Service2 is exiting...\n");
+      }  
+		}
+  answer=determinant(arr);
+  myans->answer = answer;
+	myans->err = 0;
+  kill(client_id,SIGUSR1);
   return 0;
 }
