@@ -40,7 +40,7 @@ void handle_sigint()
 { 
   char * command = "ipcrm -a";
 	system(command);
-  printf("\nRequest Queue is cleared.\n"); 
+  printf("\nRequest Queue is cleared.\nServer is Exiting.\n"); 
   exit(0);
 } 
 
@@ -54,7 +54,7 @@ int main()
 	printf("---- Server program has started ----- \n");
 
 	//Creating Shared Memory for queue
-		key_t key = ftok("buffer.txt",10);
+		key_t key = ftok("request.txt",10);
 		if(key<0){
 			perror("errorKeyQueueServer: ");
 			exit(0);
@@ -175,5 +175,4 @@ while(1)
 			}
 			sleep(1);
   }	
-	printf("exiting sucessfully");
 }

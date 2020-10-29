@@ -44,11 +44,9 @@ struct sembuf v = { 0, +1, SEM_UNDO};
 int main()
 {
 	int pid = getpid();
-
 	signal(SIGUSR1,my_handler);
-	printf(" Client program has started with PID: %d\n",pid);
 		//Creatring Shared Memory for queue
-		key_t keyForQueue = ftok("buffer.txt",10);
+		key_t keyForQueue = ftok("request.txt",10);
 		if(keyForQueue<0){
 			perror("errorKeyQueueClient: ");
 			exit(0);
@@ -96,7 +94,7 @@ int main()
 
 	//taking input of service choice and respective data
 	int c;
-  choice: printf("Enter 1 to check whether a string is palindrome or not?\n" );
+  choice: printf("\nEnter 1 to check whether a string is palindrome or not?\n" );
   printf("Enter 2 to find determinant of a 3x3 matrix.\n" );
   printf("Enter 3 to find factorial of an integer?\n" );
   printf("Choose the service you want to avail (1/2/3) or -1 to exit: ");
@@ -114,7 +112,7 @@ int main()
 	}
 	else if(c ==2)
 	{
-		printf("Enter matrix elements: ");
+		printf("Enter matrix elements: \n");
 		for(int i=0;i<3;i++){
 			for(int j=0;j<3;j++){
 				scanf("%lf",&temp_mat[i][j]);
