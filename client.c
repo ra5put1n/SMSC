@@ -185,6 +185,8 @@ int main()
 			else
 				printf("Answer is: %.2lf\n",final_ans);
 	} 
+//clearing shared memory
+shmctl(shmid, IPC_RMID, NULL);
   exit(0);
 
 }
