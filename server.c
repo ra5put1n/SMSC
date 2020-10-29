@@ -20,6 +20,8 @@
 	int client_id;
 }input_data; 	
 
+int glob_shm;
+
 struct data_queue {
 	struct data queue[100];
 	int num;
@@ -36,9 +38,13 @@ union semun {
 struct sembuf p = { 0, -1, SEM_UNDO};
 struct sembuf v = { 0, +1, SEM_UNDO};
 
-void handle_sigint() 
+void handle_sigint()
 { 
-  char * command = "ipcrm -a";
+  char shar_id[100];
+  snprintf(shar_id,100,"%d",glob_shm);
+  char command[100];
+	strcpy(command,"ipcrm -m ");
+  strcat(command,shar_id);
 	system(command);
   printf("\nRequest Queue is cleared.\nServer is Exiting.\n"); 
   exit(0);
@@ -60,6 +66,7 @@ int main()
 			exit(0);
 		}
 		int shmid= shmget(key,sizeof(struct data_queue),IPC_CREAT | 0666);
+		glob_shm = shmid;
 		if(shmid<0){
 			perror("errorShmServer: ");
 			exit(0);
