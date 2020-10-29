@@ -124,6 +124,12 @@ int main()
 		printf("Enter number to find factorial: ");
 		scanf("%d",&temp_fac);
 	}
+	else if (c==-1)
+	{
+		printf("Exiting...\n");
+		shmctl(shmid, IPC_RMID, NULL);
+		exit(0);
+	}
 	else
 	{
 			printf("Wrong choice..\n");
@@ -185,8 +191,8 @@ int main()
 			else
 				printf("Answer is: %.2lf\n",final_ans);
 	} 
-//clearing shared memory
-shmctl(shmid, IPC_RMID, NULL);
+	//clearing shared memory
+	shmctl(shmid, IPC_RMID, NULL);
   exit(0);
 
 }

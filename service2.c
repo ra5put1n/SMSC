@@ -25,13 +25,11 @@ double determinant(double arr[3][3]){
 
 int main(int argc, char * argv[]){
   double arr[3][3],answer;
-	int err;
 	int shared_address = atoi(argv[argc-2]);
   int client_id = atoi(argv[argc-1]);
   struct ANS *myans = (struct ANS *)shmat(shared_address, NULL, 0);
   signal(SIGUSR1,my_handler);
   
-		err=0;
     int i=1;
     for(int j=0;j<3;j++)
 		{

@@ -150,11 +150,6 @@ while(1)
 						execl("./service3", "./service3",fact,shared_id,clint_id, NULL);
 						exit(0);
 					}
-					// else
-					// {
-					// 	puts("\nNo choice but to die");
-					// 	exit(0);
-					// }
       	}
 				back++;
 			}
