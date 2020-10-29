@@ -84,64 +84,88 @@ int main()
   printf("Choose the service you want to avail (1/2/3) or -1 to exit: ");
 	scanf("%d",&c);
 
-  if(semop(id, &p, 1) < 0)
-  {
-     perror("semop p"); exit(13);
-  }
-	//cs
-	q->num++;
-	int num = q->num;
-	//cs end
-  if(semop(id, &v, 1) < 0)
-  {
-    perror("semop p"); exit(14);
-  }
+  // if(semop(id, &p, 1) < 0)
+  // {
+  //    perror("semop p"); exit(13);
+  // }
+	// //cs
+
+	// //cs end
+  // if(semop(id, &v, 1) < 0)
+  // {
+  //   perror("semop p"); exit(14);
+  // }
 
   //printf("%d",c);
 	//printf("q->num incremented : %d",num);
 	//printf("\nChoice: %d",c);
-  q->queue[num].shared_mem_id=shmForQueue;
-  q->queue[num].client_id=pid;
+ 
 
 	puts("");
 
-  if(semop(id, &p, 1) < 0)
-  {
-     perror("semop p"); exit(13);
-  }
+	int temp_fac;
+	double temp_mat[3][3];
+	char temp_string[100];
+  
 	//cs
   if(c==1)
 	{
-		q->queue[num].service=1;
+		//q->queue[num].service=1;
 		printf("Enter string: ");
-		scanf("%s",q->queue[num].string);
+		scanf("%s",temp_string);
 	}
 	else if(c ==2)
 	{
-		q->queue[num].service=2;
+		//q->queue[num].service=2;
 		printf("Enter matrix elements: ");
 		for(int i=0;i<3;i++){
 			for(int j=0;j<3;j++){
-				scanf("%lf",&q->queue[num].matrix[i][j]);
+				scanf("%lf",&temp_mat[i][j]);
 			}
 		}
 	}
   else if(c == 3)
 	{
-		q->queue[num].service=3;
+		//q->queue[num].service=3;
 		printf("Enter number to find factorial: ");
-		scanf("%d",&q->queue[num].factorial);
+		scanf("%d",&temp_fac);
 	}
 	else
 	{
-			if(semop(id, &v, 1) < 0)
-  		{
-    			perror("semop p"); exit(14);
-  		}
 			printf("Wrong choice..\n");
 			goto choice;
 	}
 	//cs
+	if(semop(id, &p, 1) < 0)
+  {
+     perror("semop p"); exit(13);
+  }
+	//input data stuff here
+
+	q->num++;
+	int num = q->num;
+	q->queue[num].shared_mem_id=shmForQueue;
+  q->queue[num].client_id=pid;
+
+	if(c == 1)
+	{
+		q->queue[num].service = 1;
+		strcpy(q->queue[num].string,temp_string);
+	}
+	else if(c == 2)
+	{	
+		q->queue[num].service = 2;
+		for(int i=0;i<3;i++){
+			for(int j=0;j<3;j++){
+				q->queue[num].matrix[i][j] = temp_mat[i][j];
+			}
+		}
+	}
+	else if(c == 3)
+	{
+		q->queue[num].service = 3;
+		q->queue[num].factorial = temp_fac;
+	}
   if(semop(id, &v, 1) < 0)
   {
     perror("semop p"); exit(14);
