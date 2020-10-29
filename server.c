@@ -36,6 +36,14 @@ union semun {
 struct sembuf p = { 0, -1, SEM_UNDO};
 struct sembuf v = { 0, +1, SEM_UNDO};
 
+void handle_sigint() 
+{ 
+  char * command = "ipcrm -a";
+	system(command);
+  printf("\nRequest Queue is cleared."); 
+  exit(0);
+} 
+
 int main()
 {
   char mat[3][3][100];
@@ -82,6 +90,7 @@ int main()
 
 while(1)
 	{
+     signal(SIGINT, handle_sigint); 
 			//cs start
       if(semop(id, &p, 1) < 0){
         perror("semop p"); exit(13);
@@ -114,7 +123,7 @@ while(1)
 				int pid,ch;
 				ch = input_data.service;				
 				pid = fork();
-        
+
 				if(pid == 0)
 				{
 					//snprintf changes from int to str
