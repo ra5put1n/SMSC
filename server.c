@@ -27,23 +27,6 @@ struct data_queue {
 
 void my_handler(){}
 
-// IN CASE IF snprintf() DOES NOT WORK..
-// void tostring(char str[], int num)
-// {
-//     int rem, len = 0, n;
-//     n=num;
-//     while (n != 0){
-//         len++;
-//         n /= 10;
-//     }
-//     for (int i = 0; i < len; i++){
-//         rem = num % 10;
-//         num = num / 10;
-//         str[len - (i + 1)] = rem + '0';
-//     }
-//     str[len] = '\0';
-// }
-
 union semun {
     int val;
     struct semid_ds *buf;
@@ -60,8 +43,9 @@ int main()
   char shared_id[100];
   char clint_id[100];
 	signal(SIGUSR1,my_handler);
-	printf(" Server program has started \n");
-	// Creating Shared Memory for queue
+	printf("---- Server program has started ----- \n");
+
+	//Creating Shared Memory for queue
 		key_t key = ftok("buffer.txt",10);
 		if(key<0){
 			perror("errorKeyQueueServer: ");
@@ -78,6 +62,7 @@ int main()
 			exit(0);
 		}
 
+		//semaphore implementation
     int id = semget(KEY, 1, 0666 | IPC_CREAT);
     if(id < 0)
     {
@@ -89,67 +74,62 @@ int main()
     {
         perror("semctl"); exit(12);
     }
-	// shared memory created for queue
+
+	//shared memory variables initialize
 	q->num = -1;
 	int front,back=0;
 	printf("\nReady for Operations!\n");
 
 while(1)
 	{
+			//cs start
       if(semop(id, &p, 1) < 0){
         perror("semop p"); exit(13);
       }
-			//cs
+			
 			front = q->num;
-			//cs end
+
       if(semop(id, &v, 1) < 0){
         perror("semop p"); exit(14);
       }
+			//cs end
 
-      //printf("front : %d,  back : %d ",front,back);
 			if(front == -1){
 				puts("Waiting for clients..");
 			}
 			else if(front >= back)
 			{
+				//cs start
         if(semop(id, &p, 1) < 0){
           perror("semop p"); exit(13);
         }
-				//cs
+				
 				input_data = q->queue[back];
-				//cs end
+				
         if(semop(id, &v, 1) < 0){
           perror("semop p"); exit(14);
         }
+				//cs end
 
 				int pid,ch;
-				ch = input_data.service;
-				
+				ch = input_data.service;				
 				pid = fork();
-        //printf("pid : %d",pid);
+        
 				if(pid == 0)
 				{
-					//printf("\nChoice of service is: %d",ch);
-					//printf("\npid of child: %d",getpid());
+					//snprintf changes from int to str
           snprintf(shared_id,100,"%d",input_data.shared_mem_id);
           snprintf(clint_id,100,"%d",input_data.client_id);
-          // puts(shared_id);
-          // puts(clint_id);
 					if(ch == 1)
 					{
-						//printf("\nstrings :\n");
-						//puts(input_data.string);
 						execl("./service1", "./service1", input_data.string,shared_id,clint_id, NULL);
 						exit(0);
 					}
 					else if(ch == 2)
 					{
-						//printf("\nMatrix stuff\n");
             for(int i=0;i<3;i++){
               for(int j=0;j<3;j++){
-                //printf("\n%lf",input_data.matrix[i][j]);
                 snprintf(mat[i][j],100,"%lf",input_data.matrix[i][j]);
-                //puts(mat[i][j]);
               }
             }
 						execl("./service2", "./service2", mat[0][0],mat[0][1],mat[0][2],mat[1][0],mat[1][1],mat[1][2],mat[2][0],mat[2][1],mat[2][2],shared_id,clint_id, NULL);
@@ -157,11 +137,7 @@ while(1)
 					}
 					else if(ch == 3)
 					{
-						//puts("\nIn factorial");
-						//printf("\nfactorial:%d", input_data.factorial);
             snprintf(fact,100,"%d",input_data.factorial);
-            //tostring(fact, input_data.factorial);
-            //puts(fact);
 						execl("./service3", "./service3",fact,shared_id,clint_id, NULL);
 						exit(0);
 					}
@@ -175,19 +151,18 @@ while(1)
 			}
 			else 
 			{
-				//puts("\nresetting front and back");
 			  back= 0;
+				//cs
         if(semop(id, &p, 1) < 0)
         {
           perror("semop p"); exit(13);
         }
-				//cs
 				q->num = -1;
-				//cs end
         if(semop(id, &v, 1) < 0)
         {
           perror("semop p"); exit(14);
         }
+				//cs end
 			}
 			sleep(1);
   }	

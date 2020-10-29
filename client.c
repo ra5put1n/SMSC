@@ -29,7 +29,6 @@ struct ANS{
   int answer;
 };
 
-
 void my_handler(){}
 
 union semun {
@@ -47,7 +46,7 @@ int main()
 
 	signal(SIGUSR1,my_handler);
 	printf(" Client program has started with PID: %d\n",pid);
-	// Creatring Shared Memory for queue
+		//Creatring Shared Memory for queue
 		key_t keyForQueue = ftok("buffer.txt",10);
 		if(keyForQueue<0){
 			perror("errorKeyQueueClient: ");
@@ -64,23 +63,24 @@ int main()
 			exit(0);
 		}
 
-			key_t key1 = ftok("answer.txt", pid);
-  if(key1==-1){
-    perror("error0:");
-    exit(1);
-  }
-  int shmid = shmget(key1, sizeof(struct ANS), IPC_CREAT | 0666);
-  if(shmid<0){
-    perror("error1:");
-    exit(1);
-  }
-  struct ANS *myans=(struct ANS *)shmat(shmid,NULL,0);
-  if(myans == (void *) -1){
-    perror("error2:");
-    exit(1);
-  }
+    //Creating shared memory for service to client 
+		key_t key1 = ftok("answer.txt", pid);
+    if(key1==-1){
+      perror("error0:");
+      exit(1);
+    }
+    int shmid = shmget(key1, sizeof(struct ANS), IPC_CREAT | 0666);
+    if(shmid<0){
+      perror("error1:");
+      exit(1);
+    }
+    struct ANS *myans=(struct ANS *)shmat(shmid,NULL,0);
+    if(myans == (void *) -1){
+      perror("error2:");
+      exit(1);
+    }
 	
-
+    //System semaphore implementation
     int id = semget(KEY, 1, 0666 | IPC_CREAT);
     if(id < 0)
     {
@@ -92,10 +92,9 @@ int main()
     {
         perror("semctl"); exit(12);
     }
-	// shared memory created for queue
 
+	//taking input of service choice and respective data
 	int c;
-	
   choice: printf("Enter 1 to check whether a string is palindrome or not?\n" );
   printf("Enter 2 to find determinant of a 3x3 matrix.\n" );
   printf("Enter 3 to find factorial of an integer?\n" );
@@ -107,16 +106,13 @@ int main()
 	double temp_mat[3][3];
 	char temp_string[100];
   
-	//cs
   if(c==1)
 	{
-		//q->queue[num].service=1;
 		printf("Enter string: ");
 		scanf("%s",temp_string);
 	}
 	else if(c ==2)
 	{
-		//q->queue[num].service=2;
 		printf("Enter matrix elements: ");
 		for(int i=0;i<3;i++){
 			for(int j=0;j<3;j++){
@@ -126,7 +122,6 @@ int main()
 	}
   else if(c == 3)
 	{
-		//q->queue[num].service=3;
 		printf("Enter number to find factorial: ");
 		scanf("%d",&temp_fac);
 	}
@@ -135,12 +130,11 @@ int main()
 			printf("Wrong choice..\n");
 			goto choice;
 	}
-	//cs
-	if(semop(id, &p, 1) < 0)
-  {
+	
+	//cs start
+	if(semop(id, &p, 1) < 0){
      perror("semop p"); exit(13);
   }
-	//input data stuff here
 
 	q->num++;
 	int num = q->num;
@@ -170,28 +164,21 @@ int main()
   {
     perror("semop p"); exit(14);
   }
+	//cs end
 
   puts("");
 
-
-  //printf("\nshmid : %d",q->queue[num].shared_mem_id);
-  //printf("\nclient id : %d",q->queue[num].client_id);
 	pause();
-	//printf("myans->answer: %d",myans->answer);
-	//cs
 	int final_ans = myans->answer;
-	//cs
-  //printf("\nfinal ans : %d",final_ans);
-	
   if(c==1)
   {
     if(final_ans == 0)
-      printf("\nNOT a palindrome");
+      printf("NOT a palindrome\n");
     else
-      printf("\nPalindrome");
+      printf("Palindrome\n");
   }
   else
-    printf("\nAnswer is: %d",final_ans);
+    printf("Answer is: %d\n",final_ans);
       
   exit(0);
 
