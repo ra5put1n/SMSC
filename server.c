@@ -40,12 +40,7 @@ struct sembuf v = { 0, +1, SEM_UNDO};
 
 void handle_sigint()
 { 
-  char shar_id[100];
-  snprintf(shar_id,100,"%d",glob_shm);
-  char command[100];
-	strcpy(command,"ipcrm -m ");
-  strcat(command,shar_id);
-	system(command);
+  shmctl(glob_shm,IPC_RMID, NULL);
   printf("\nRequest Queue is cleared.\nServer is Exiting.\n"); 
   exit(0);
 } 
