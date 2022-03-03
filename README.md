@@ -1,21 +1,13 @@
-#OS-Project
+### Server-Client application with multiple services and simultaneous clients.
 
+Tested on: Linux
 
-Server-Client application with multiple services and simultaneous clients.
-Tested on linux platforms, windows platform might not work.
-
-#Authors:
-
-Krishna Kaipa
-
-Deepak Gajjala
-
-#Requirements:
+##### Requirements:
 
 1. gcc installed
 2. python3 installed
 
-#How to run?
+#### How to run?
 
 1. Run init.py
 2. Run server
